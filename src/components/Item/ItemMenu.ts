@@ -1,4 +1,5 @@
 import update from 'immutability-helper';
+import * as path2 from 'path';
 import { Menu, Platform, TFile, TFolder } from 'obsidian';
 import { Dispatch, StateUpdater, useCallback } from 'preact/hooks';
 import { StateManager } from 'src/StateManager';
@@ -66,10 +67,20 @@ export function useItemMenu({
                 .replace(condenceWhiteSpaceRE, ' ');
 
               const newNoteFolder = stateManager.getSetting('new-note-folder');
-              const newNoteTemplatePath = stateManager.getSetting('new-note-template');
 
-              const targetFolder = newNoteFolder
-                ? (stateManager.app.vault.getAbstractFileByPath(newNoteFolder as string) as TFolder)
+              const now = new Date();
+              const currentYear = now.getFullYear().toString();
+              const currentMonth = now.getMonth() + 1;
+
+              const fullPath = path2.join(
+                    newNoteFolder,
+                    currentYear,
+                    currentMonth.toString().padStart(2, '0')
+                    );
+              const newNoteTemplatePath = stateManager.getSetting('new-note-template');
+              await this.app.vault.createFolder(fullPath);
+              const targetFolder = fullPath
+                ? (stateManager.app.vault.getAbstractFileByPath(fullPath as string) as TFolder)
                 : stateManager.app.fileManager.getNewFileParent(stateManager.file.path);
 
               const newFile = (await (stateManager.app.fileManager as any).createNewMarkdownFile(
