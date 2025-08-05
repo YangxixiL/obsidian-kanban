@@ -78,7 +78,9 @@ export function useItemMenu({
                     currentMonth.toString().padStart(2, '0')
                     );
               const newNoteTemplatePath = stateManager.getSetting('new-note-template');
-              await this.app.vault.createFolder(fullPath);
+              if (!stateManager.app.vault.getAbstractFileByPath(fullPath)) {
+                await stateManager.app.vault.createFolder(fullPath);
+              }
               const targetFolder = fullPath
                 ? (stateManager.app.vault.getAbstractFileByPath(fullPath as string) as TFolder)
                 : stateManager.app.fileManager.getNewFileParent(stateManager.file.path);
