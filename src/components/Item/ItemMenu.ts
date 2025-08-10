@@ -26,8 +26,6 @@ const tagRegEx = /#([^\u2000-\u206F\u2E00-\u2E7F'!"#$%&()*+,.:;<=>?@^`{|}~[\]\\\
 const condenceWhiteSpaceRE = /\s+/g;
 
 
-
-
 interface UseItemMenuParams {
   setEditState: Dispatch<StateUpdater<EditState>>;
   item: Item;
