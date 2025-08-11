@@ -170,24 +170,6 @@ export function useItemMenu({
             .onClick(() => boardModifiers.duplicateEntity(path));
         })
         .addItem((i) => {
-          i.setIcon('lucide-list-start')
-            .setTitle(t('Insert card before'))
-            .onClick(() =>
-              boardModifiers.insertItems(path, [stateManager.getNewItem('', ' ', true)])
-            );
-        })
-        .addItem((i) => {
-          i.setIcon('lucide-list-end')
-            .setTitle(t('Insert card after'))
-            .onClick(() => {
-              const newPath = [...path];
-
-              newPath[newPath.length - 1] = newPath[newPath.length - 1] + 1;
-
-              boardModifiers.insertItems(newPath, [stateManager.getNewItem('', ' ', true)]);
-            });
-        })
-        .addItem((i) => {
           i.setIcon('lucide-arrow-up')
             .setTitle(t('Move to top'))
             .onClick(() => boardModifiers.moveItemToTop(path));
