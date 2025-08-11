@@ -15,6 +15,7 @@ import {
   constructMenuDatePickerOnChange,
   constructMenuTimePickerOnChange,
   constructTimePicker,
+  getWeekOfMonth,
 } from './helpers';
 
 const illegalCharsRegEx = /[\\/:"*?<>|]+/g;
@@ -23,6 +24,9 @@ const wikilinkRegEx = /!?\[\[([^\]]*)\]\]/g;
 const mdLinkRegEx = /!?\[([^\]]*)\]\([^)]*\)/g;
 const tagRegEx = /#([^\u2000-\u206F\u2E00-\u2E7F'!"#$%&()*+,.:;<=>?@^`{|}~[\]\\\s\n\r]+)/g;
 const condenceWhiteSpaceRE = /\s+/g;
+
+
+
 
 interface UseItemMenuParams {
   setEditState: Dispatch<StateUpdater<EditState>>;
@@ -71,18 +75,25 @@ export function useItemMenu({
               const now = new Date();
               const currentYear = now.getFullYear().toString();
               const currentMonth = now.getMonth() + 1;
-
-              const fullPath = path2.join(
+              const MonthFolderPath = path2.join(
                     newNoteFolder,
                     currentYear,
                     currentMonth.toString().padStart(2, '0')
                     );
+              const weekNum = getWeekOfMonth(now, 1);
+              const weekFolderName = `W${weekNum.toString().padStart(2, '0')}`;
+              const weekFolderPath = path2.join(MonthFolderPath, weekFolderName);
+
               const newNoteTemplatePath = stateManager.getSetting('new-note-template');
-              if (!stateManager.app.vault.getAbstractFileByPath(fullPath)) {
-                await stateManager.app.vault.createFolder(fullPath);
+
+
+              const folderExists = stateManager.app.vault.getAbstractFileByPath(weekFolderPath);
+              if (!folderExists) {
+                await stateManager.app.vault.createFolder(weekFolderPath);
               }
-              const targetFolder = fullPath
-                ? (stateManager.app.vault.getAbstractFileByPath(fullPath as string) as TFolder)
+              const targetFolder = weekFolderPath
+                ? (stateManager.app.vault.getAbstractFileByPath(weekFolderPath as string) as TFolder)
+
                 : stateManager.app.fileManager.getNewFileParent(stateManager.file.path);
 
               const newFile = (await (stateManager.app.fileManager as any).createNewMarkdownFile(

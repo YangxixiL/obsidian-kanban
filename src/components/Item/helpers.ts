@@ -12,6 +12,14 @@ import { Instance } from '../Editor/flatpickr/types/instance';
 import { c, escapeRegExpStr } from '../helpers';
 import { Item } from '../types';
 
+export function getWeekOfMonth(date: Date, startOfWeek: 0 | 1 = 1) {
+  const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+  const firstDayWeekday = firstDayOfMonth.getDay(); // 0..6 (Sun..Sat)
+
+  const offset = (firstDayWeekday - startOfWeek + 7) % 7;
+
+  return Math.ceil((date.getDate() + offset) / 7);
+}
 export function constructDatePicker(
   win: Window,
   stateManager: StateManager,
