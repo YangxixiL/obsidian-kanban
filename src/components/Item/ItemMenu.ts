@@ -59,7 +59,14 @@ export function useItemMenu({
             .setTitle(t('New note from card'))
             .onClick(async () => {
               const prevTitle = item.data.titleRaw.split('\n')[0].trim();
-              const sanitizedTitle = prevTitle
+              const tagRegEx = /#[\p{L}\p{N}_-]+/gu;
+              const tags = prevTitle.match(tagRegEx) ?? [];
+              const baseTitleRaw = prevTitle
+                .replace(tagRegEx, '')
+                .trim()
+                .replace(condenceWhiteSpaceRE, ' ');
+
+              const sanitizedTitle = baseTitleRaw
                 .replace(embedRegEx, '$1')
                 .replace(wikilinkRegEx, '$1')
                 .replace(mdLinkRegEx, '$1')
@@ -106,10 +113,12 @@ export function useItemMenu({
               stateManager.app.workspace.setActiveLeaf(newLeaf, false, true);
 
               await applyTemplate(stateManager, newNoteTemplatePath as string | undefined);
+              const mdLink = stateManager.app.fileManager.generateMarkdownLink(newFile, stateManager.file.path);
+              const linkedFirstLine = [mdLink, tags.join(' ')].filter(Boolean).join(' ').trim();
 
               const newTitleRaw = item.data.titleRaw.replace(
                 prevTitle,
-                stateManager.app.fileManager.generateMarkdownLink(newFile, stateManager.file.path)
+                linkedFirstLine
               );
 
               boardModifiers.updateItem(path, stateManager.updateItemContent(item, newTitleRaw));
@@ -208,7 +217,12 @@ export function useItemMenu({
                 item.data.metadata.date?.toDate()
               );
             });
-        });
+        })
+        .addItem((i) => {
+        i.setIcon('lucide-arrow-down')
+          .setTitle('Add Tag')
+          .onClick(() => boardModifiers.moveItemToBottom(path));
+      });
 
       if (hasDate) {
         menu.addItem((i) => {
