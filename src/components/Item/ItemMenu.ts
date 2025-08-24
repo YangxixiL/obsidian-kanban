@@ -59,7 +59,6 @@ export function useItemMenu({
             .setTitle(t('New note from card'))
             .onClick(async () => {
               const prevTitle = item.data.titleRaw.split('\n')[0].trim();
-              const tagRegEx = /#[\p{L}\p{N}_-]+/gu;
               const tags = prevTitle.match(tagRegEx) ?? [];
               const baseTitleRaw = prevTitle
                 .replace(tagRegEx, '')
